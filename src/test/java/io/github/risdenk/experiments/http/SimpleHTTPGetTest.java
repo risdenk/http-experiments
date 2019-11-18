@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
-class HttpExperimentsTest {
+class SimpleHTTPGetTest {
   private static Server server;
   private static URI serverUri;
 
