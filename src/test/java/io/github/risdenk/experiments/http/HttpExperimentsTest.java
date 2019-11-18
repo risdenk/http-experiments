@@ -1,5 +1,9 @@
 package io.github.risdenk.experiments.http;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -55,5 +59,15 @@ class HttpExperimentsTest {
     HttpURLConnection http = (HttpURLConnection) serverUri.resolve("/").toURL().openConnection();
     http.connect();
     Assertions.assertEquals(HttpStatus.OK_200, http.getResponseCode());
+  }
+
+  @Test
+  void testHttpClientGet() throws Exception {
+    try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+      HttpGet httpGet = new HttpGet(serverUri);
+      try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+        Assertions.assertEquals(HttpStatus.OK_200, response.getStatusLine().getStatusCode());
+      }
+    }
   }
 }
