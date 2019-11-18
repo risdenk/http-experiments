@@ -7,6 +7,8 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -80,6 +82,18 @@ class SimpleHTTPGetTest {
     Request request = new Request.Builder().url(serverUri.toString()).build();
     try (Response response = client.newCall(request).execute()) {
       Assertions.assertEquals(HttpStatus.OK_200, response.code());
+    }
+  }
+
+  @Test
+  void testJettyHttpClientGet() throws Exception {
+    HttpClient httpClient = new HttpClient();
+    try {
+      httpClient.start();
+      ContentResponse response = httpClient.GET(serverUri);
+      Assertions.assertEquals(HttpStatus.OK_200, response.getStatus());
+    } finally {
+      httpClient.stop();
     }
   }
 }
