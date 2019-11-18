@@ -10,9 +10,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.http.MimeTypes;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.jupiter.api.AfterAll;
@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.net.HttpURLConnection;
 import java.net.URI;
 
@@ -35,9 +38,7 @@ class SimpleHTTPGetTest {
     server.addConnector(connector);
 
     ServletContextHandler context = new ServletContextHandler();
-    ServletHolder defaultServ = new ServletHolder("default", DefaultServlet.class);
-    defaultServ.setInitParameter("resourceBase", System.getProperty("user.dir"));
-    defaultServ.setInitParameter("dirAllowed", "true");
+    ServletHolder defaultServ = new ServletHolder("default", HttpGetServlet.class);
     context.addServlet(defaultServ, "/");
     server.setHandler(context);
 
@@ -94,6 +95,14 @@ class SimpleHTTPGetTest {
       Assertions.assertEquals(HttpStatus.OK_200, response.getStatus());
     } finally {
       httpClient.stop();
+    }
+  }
+
+  public static class HttpGetServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
+      resp.setContentType(MimeTypes.Type.TEXT_HTML.asString());
+      resp.setStatus(HttpServletResponse.SC_OK);
     }
   }
 }
